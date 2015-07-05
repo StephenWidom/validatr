@@ -9,7 +9,7 @@
 			requiredClass: 		'req',						// Class of required form elements
 			errorClass: 		'error', 					// Class to add to inputs with errors
 			validateOnBlur: 	true,						// Check value on input's blur
-			validateEmail: 		true,						// Validate email inputs
+			validateEmail: 		false,						// Validate email inputs
 			emailClass: 		'email', 					// Class of inputs containing emails
 			emailMessage: 		'Please provide a valid email address', // Displayed when an invalid email is provided
 			useFontAwesome: 	false,						// Add an .fa-warning to error messages
