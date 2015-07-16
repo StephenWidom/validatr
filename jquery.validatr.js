@@ -72,7 +72,10 @@
 						$.post(s.handlerPath,$form.serialize(),function(data){ // Post form info to form handler
 							if(data == s.successStatus){ // If form handler says everything is cool
 								$form.find(s.statusElement).html(s.successMessage); // Display success message
-								if(s.disableOnSuccess) $('input, textarea, select').prop("disabled",true).css("cursor","auto"); // Disable form controls (to prevent duplicate submissions)
+								if(s.disableOnSuccess) {
+									var allFormElements = $("input,textarea,select");
+									$form.find(allFormElements).prop("disabled",true).css("cursor","auto"); // Disable form controls (to prevent duplicate submissions)
+								}
 							} else { // If handler returns an error
 								$(s.statusElement).html(data); // Display error message returned from handler
 							}
