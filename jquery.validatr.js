@@ -77,7 +77,7 @@
 									$form.find(allFormElements).prop("disabled",true).css("cursor","auto"); // Disable form controls (to prevent duplicate submissions)
 								}
 							} else { // If handler returns an error
-								$(s.statusElement).html(data); // Display error message returned from handler
+								$form.find(s.statusElement).html(data); // Display error message returned from handler
 							}
 						});
 					} else { // If we're not using AJAX, just submit form normally
