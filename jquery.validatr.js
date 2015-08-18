@@ -1,4 +1,4 @@
-// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2015-04-05
+// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2015-08-18
 (function($){ // Simple form validation w/ AJAX form submission
 
 	var time = 0; setInterval(setTime,1000); function setTime(){++time;} // Timing how long it takes to complete - for spam prevention purposes
@@ -18,6 +18,7 @@
 			handlerPath: 		'handleForm.php',			// Where to submit the form (if using AJAX)
 			disableOnSuccess: 	true,						// Disable form controls on success
 			successStatus: 		'success',					// What a successful submission will return
+			replaceForm: 		false,						// Replace form with success message when submitted
 			successMessage: 	'Thanks for contacting us!',// Success message to be displayed
 			errorMessage: 		'Please complete all required fields' // Error message
 		},o);
@@ -71,7 +72,8 @@
 					if(s.useAJAX){ // If we're going to submit the form asynchronously
 						$.post(s.handlerPath,$form.serialize(),function(data){ // Post form info to form handler
 							if(data == s.successStatus){ // If form handler says everything is cool
-								$form.find(s.statusElement).html(s.successMessage); // Display success message
+								var replaceTarget = (s.replaceForm) ? $form : $form.find(s.statusElement);
+								replaceTarget.html(s.successMessage); // Display success message
 								if(s.disableOnSuccess) {
 									var allFormElements = $("input,textarea,select");
 									$form.find(allFormElements).prop("disabled",true).css("cursor","auto"); // Disable form controls (to prevent duplicate submissions)
