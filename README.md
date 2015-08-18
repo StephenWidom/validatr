@@ -46,6 +46,9 @@ Disable form controls on success
 ### successStatus: 'success'
 What a successful submission will return (from your form handler)
 
+### replaceForm: false
+Replace the whole form element (instead of just the .status text) with success message
+
 ### successMessage: 'Thanks for contacting us!'
 Success message to be displayed
 
