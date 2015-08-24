@@ -18,19 +18,24 @@
 			disableOnSuccess: 	true,						// Disable form controls on success
 			successStatus: 		'success',					// What a successful submission will return
 			replaceForm: 		false,						// Replace form with success message when submitted
+			submitMessage: 		'Submitting...', 			// Message displayed while form is submitting
 			successMessage: 	'Thanks for contacting us!',// Success message to be displayed
 			errorMessage: 		'Please complete all required fields.' // Default error message
 		},o);
 
-		var $form = $(this); // Don't want to lose this...
-		var errorMessage = s.errorMessage; // Need to be able to access this
+		var $form = $(this), // Don't want to lose this...
+		 	errorMessage = s.errorMessage, // Need to be able to access this
+		 	$status = $form.find(s.statusElement),
+		 	$required = $form.find('.' + s.requiredClass),
+			submitMessage = s.submitMessage + ((s.useFontAwesome) ? ' <i class="fa fa-spinner fa-pulse"></i>' : '');
+
+		 $status.hide(); // Don't show anything by default - status element may have a background...
 
 		$form.on("submit",function(e){ // Catch form submission
 			e.preventDefault(); // Don't submit the form by default
-			errorMessage  = s.errorMessage; // Set error message
 			$form.find('.' + s.errorClass).removeClass(s.errorClass); // Remove error styling from form elements
 			var error = false; // No errors so far...
-			$form.find('.' + s.requiredClass).each(function(){ // Gather each required form input
+			$required.each(function(){ // Gather each required form input
 				if(!isValid($(this))){ // Check if the value of said input is valid. If not..
 					error = true; // We've encountered an error
 					$(this).addClass(s.errorClass); // Add error class to the input in question
@@ -40,7 +45,7 @@
 		});
 
 		if(s.validateOnBlur){ // If we're validating on input blur
-			$form.find('.' + s.requiredClass).on("blur",function(){
+			$required.on("blur",function(){
 				if(isValid($(this))){ // If everything is cool..
 					$(this).removeClass(s.errorClass); // Make sure input isn't in error state
 				} else { // If value is invalid
@@ -53,10 +58,10 @@
 		function validateFields(error){
 			if(error){ // If a required field is invalid
 				if(s.useFontAwesome) errorMessage = '<i class="fa fa-warning"></i> ' + errorMessage; // Add warning sign icon to error message if FontAwesome is enabled
-				$form.find(s.statusElement).html(errorMessage); // Display error message in status element
+				$status.html(errorMessage).show(); // Display error message in status element
 			} else { // If we haven't encountered an error yet (we may still have to validate emails & zip codes)
-				var problemFields = []; // Set up an empty array to contain problematic inputs
-				var emailInputs = $form.find('.' + s.emailClass); // Grab all email inputs we're going to validate
+				var problemFields = [], // Set up an empty array to contain problematic inputs
+					emailInputs = $form.find('.' + s.emailClass); // Grab all email inputs we're going to validate
 				if(emailInputs.length > 0){ // If there are email inputs that need validating...
 					emailInputs.each(function(){ // ...loop through each one
 						var email = $(this).val().trim(); // Get value of email input
@@ -84,20 +89,22 @@
 				} else {
 					if(s.filterSpam) $form.append('<input type="hidden" name="timer" value="' + time + '"/>'); // If we're filtering spam, append a hidden field with the value of timer
 					if(s.useAJAX){ // If we're going to submit the form asynchronously
+						$status.html(submitMessage).show(); // Tell user form is being submitted
 						$.post(s.handlerPath,$form.serialize(),function(data){ // Post form info to form handler
 							if(data == s.successStatus){ // If form handler says everything is cool
-								var replaceTarget = (s.replaceForm) ? $form : $form.find(s.statusElement);
+								var replaceTarget = (s.replaceForm) ? $form : $status;
 								replaceTarget.html(s.successMessage); // Display success message
 								if(s.disableOnSuccess) {
 									var allFormElements = $("input,textarea,select");
 									$form.find(allFormElements).prop("disabled",true).css("cursor","auto"); // Disable form controls (to prevent duplicate submissions)
 								}
 							} else { // If handler returns an error
-								$form.find(s.statusElement).html(data); // Display error message returned from handler
+								$status.html(data).show(); // Display error message returned from handler
 							}
 						});
 					} else { // If we're not using AJAX, just submit form normally
 						$form.unbind().submit(); // Have to unbind "submit"-triggered validation first
+						$status.html(submitMessage).show(); // Tell user form is being submitted
 					}
 				}
 			}
@@ -110,11 +117,10 @@
 		}
 
 		function isEmail(email){ // Real basic email validation
-			var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-			return regex.test(email);
+			return /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(email);
 		}
 
-		function isZip(zip){
+		function isZip(zip){ // Real basic zip code validation
 			return /^\d{5}(-\d{4})?$/.test(zip);
 		}
 
