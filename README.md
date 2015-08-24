@@ -19,14 +19,11 @@ Class to add to inputs with errors
 ### validateOnBlur: true
 Check value on input's blur
 
-### validateEmail: false
-Validate email inputs
-
-### emailClass: 'email'
+### emailClass: 'validateEmail'
 Class of inputs containing emails
 
-### emailMessage: 'Please provide a valid email address'
-Displayed when an invalid email is provided
+### zipClass: 'validateZip'
+Class of inputs container zip codes
 
 ### useFontAwesome: false
 Add an .fa-warning to error messages
@@ -52,7 +49,7 @@ Replace the whole form element (instead of just the .status text) with success m
 ### successMessage: 'Thanks for contacting us!'
 Success message to be displayed
 
-### errorMessage: 'Please complete all required fields'
+### errorMessage: 'Please complete all required fields.'
 Error message displayed when form fails to validate
 
 [See it in action](http://stephenwidom.com/projects/validatr)

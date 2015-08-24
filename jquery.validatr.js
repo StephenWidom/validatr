@@ -1,4 +1,4 @@
-// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2015-08-18
+// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2015-08-24
 (function($){ // Simple form validation w/ AJAX form submission
 
 	var time = 0; setInterval(setTime,1000); function setTime(){++time;} // Timing how long it takes to complete - for spam prevention purposes
@@ -9,9 +9,8 @@
 			requiredClass: 		'req',						// Class of required form elements
 			errorClass: 		'error', 					// Class to add to inputs with errors
 			validateOnBlur: 	true,						// Check value on input's blur
-			validateEmail: 		false,						// Validate email inputs
-			emailClass: 		'email', 					// Class of inputs containing emails
-			emailMessage: 		'Please provide a valid email address', // Displayed when an invalid email is provided
+			emailClass: 		'validateEmail', 			// Class of inputs containing emails to be validated
+			zipClass: 			'validateZip', 				// Class of inputs containing zip codes to be validated
 			useFontAwesome: 	false,						// Add an .fa-warning to error messages
 			filterSpam: 		false,						// Submit a value for $_POST['timer']
 			useAJAX: 			false,						// Submit the form asynchronously
@@ -20,7 +19,7 @@
 			successStatus: 		'success',					// What a successful submission will return
 			replaceForm: 		false,						// Replace form with success message when submitted
 			successMessage: 	'Thanks for contacting us!',// Success message to be displayed
-			errorMessage: 		'Please complete all required fields' // Error message
+			errorMessage: 		'Please complete all required fields.' // Default error message
 		},o);
 
 		var $form = $(this); // Don't want to lose this...
@@ -55,19 +54,34 @@
 			if(error){ // If a required field is invalid
 				if(s.useFontAwesome) errorMessage = '<i class="fa fa-warning"></i> ' + errorMessage; // Add warning sign icon to error message if FontAwesome is enabled
 				$form.find(s.statusElement).html(errorMessage); // Display error message in status element
-			} else { // If we haven't encountered an error yet (we may still have to validate emails)
-				if(s.validateEmail){ // If we're validating emails
-					$form.find('.' + s.emailClass).each(function(){
+			} else { // If we haven't encountered an error yet (we may still have to validate emails & zip codes)
+				var problemFields = []; // Set up an empty array to contain problematic inputs
+				var emailInputs = $form.find('.' + s.emailClass); // Grab all email inputs we're going to validate
+				if(emailInputs.length > 0){ // If there are email inputs that need validating...
+					emailInputs.each(function(){ // ...loop through each one
 						var email = $(this).val().trim(); // Get value of email input
 						if(!isEmail(email)){ // If an email provided is invalid
 							error = true;
-							errorMessage = s.emailMessage; // Use email error message instead of regular one
+							problemFields.push("email address");
 							$(this).addClass(s.errorClass); // Add error class to email input
-							validateFields(error); // Display said error message
 						}
 					});
 				}
-				if(!error){ // Have to check for an error again in case we enountered one when validating an email
+				var zipInputs = $form.find('.' + s.zipClass); // Grab all zip code inputs we're going to validate
+				if(zipInputs.length > 0){ // If there are zip codes that need validating...
+					zipInputs.each(function(){
+						var zip = $(this).val().trim(); // Get value of zip code input
+						if(!isZip(zip)){ // If zip code provided is invalid
+							error = true;
+							problemFields.push("zip code");
+							$(this).addClass(s.errorClass); // Add error class to zip code input
+						}
+					});
+				}
+				if(error){ // Have to check for an error again in case we enountered one when validating an email or zip code
+					errorMessage = "Please provide a valid " + problemFields[0] + ((problemFields.length > 1) ? " and " + problemFields[1] : "") + ".";
+					validateFields(error);
+				} else {
 					if(s.filterSpam) $form.append('<input type="hidden" name="timer" value="' + time + '"/>'); // If we're filtering spam, append a hidden field with the value of timer
 					if(s.useAJAX){ // If we're going to submit the form asynchronously
 						$.post(s.handlerPath,$form.serialize(),function(data){ // Post form info to form handler
@@ -98,6 +112,10 @@
 		function isEmail(email){ // Real basic email validation
 			var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 			return regex.test(email);
+		}
+
+		function isZip(zip){
+			return /^\d{5}(-\d{4})?$/.test(zip);
 		}
 
 		return this;
