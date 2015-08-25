@@ -1,4 +1,4 @@
-// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2015-08-24
+// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2015-08-25
 (function($){ // Simple form validation w/ AJAX form submission
 
 	var time = 0; setInterval(setTime,1000); function setTime(){++time;} // Timing how long it takes to complete - for spam prevention purposes
@@ -24,7 +24,6 @@
 		},o);
 
 		var $form = $(this), // Don't want to lose this...
-		 	errorMessage = s.errorMessage, // Need to be able to access this
 		 	$status = $form.find(s.statusElement),
 		 	$required = $form.find('.' + s.requiredClass),
 			submitMessage = s.submitMessage + ((s.useFontAwesome) ? ' <i class="fa fa-spinner fa-pulse"></i>' : '');
@@ -39,6 +38,7 @@
 				if(!isValid($(this))){ // Check if the value of said input is valid. If not..
 					error = true; // We've encountered an error
 					$(this).addClass(s.errorClass); // Add error class to the input in question
+					errorMessage = ((s.useFontAwesome) ? '<i class="fa fa-warning"></i> ' : '') + s.errorMessage;
 				}
 			});
 			validateFields(error); // Display error message or submit form
@@ -57,7 +57,6 @@
 		// Functions
 		function validateFields(error){
 			if(error){ // If a required field is invalid
-				if(s.useFontAwesome) errorMessage = '<i class="fa fa-warning"></i> ' + errorMessage; // Add warning sign icon to error message if FontAwesome is enabled
 				$status.html(errorMessage).show(); // Display error message in status element
 			} else { // If we haven't encountered an error yet (we may still have to validate emails & zip codes)
 				var problemFields = [], // Set up an empty array to contain problematic inputs
@@ -84,7 +83,7 @@
 					});
 				}
 				if(error){ // Have to check for an error again in case we enountered one when validating an email or zip code
-					errorMessage = "Please provide a valid " + problemFields[0] + ((problemFields.length > 1) ? " and " + problemFields[1] : "") + ".";
+					errorMessage = ((s.useFontAwesome) ? '<i class="fa fa-warning"></i> ' : '') + "Please provide a valid " + problemFields[0] + ((problemFields.length > 1) ? " and " + problemFields[1] : "") + ".";
 					validateFields(error);
 				} else {
 					if(s.filterSpam) $form.append('<input type="hidden" name="timer" value="' + time + '"/>'); // If we're filtering spam, append a hidden field with the value of timer
