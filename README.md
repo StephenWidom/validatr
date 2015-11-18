@@ -46,6 +46,9 @@ What a successful submission will return (from your form handler)
 ### replaceForm: false
 Replace the whole form element (instead of just the .status text) with success message
 
+### clearInputs: false
+Clear inputs, textareas, selects within form element on successful form submission
+
 ### submitMessage: 'Submitting...'
 Message displayed while form is submitting
 

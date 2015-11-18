@@ -1,4 +1,4 @@
-// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2015-08-25
+// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2015-11-18
 (function($){ // Simple form validation w/ AJAX form submission
 
 	var time = 0; setInterval(setTime,1000); function setTime(){++time;} // Timing how long it takes to complete - for spam prevention purposes
@@ -18,9 +18,11 @@
 			disableOnSuccess: 	true,						// Disable form controls on success
 			successStatus: 		'success',					// What a successful submission will return
 			replaceForm: 		false,						// Replace form with success message when submitted
+			clearInputs: 		false,						// Clear inputs within form element on success
 			submitMessage: 		'Submitting...', 			// Message displayed while form is submitting
 			successMessage: 	'Thanks for contacting us!',// Success message to be displayed
-			errorMessage: 		'Please complete all required fields.' // Default error message
+			errorMessage: 		'Please complete all required fields.', // Default error message
+			statusHidden: 		false 						// Start with status element hidden
 		},o);
 
 		var $form = $(this), // Don't want to lose this...
@@ -28,7 +30,7 @@
 		 	$required = $form.find('.' + s.requiredClass),
 			submitMessage = s.submitMessage + ((s.useFontAwesome) ? ' <i class="fa fa-spinner fa-pulse"></i>' : '');
 
-		 $status.hide(); // Don't show anything by default - status element may have a background...
+		if(s.statusHidden) $status.hide(); // Don't show anything by default - status element may have a background...
 
 		$form.on("submit",function(e){ // Catch form submission
 			e.preventDefault(); // Don't submit the form by default
@@ -93,9 +95,13 @@
 							if(data == s.successStatus){ // If form handler says everything is cool
 								var replaceTarget = (s.replaceForm) ? $form : $status;
 								replaceTarget.html(s.successMessage); // Display success message
-								if(s.disableOnSuccess) {
+								if(s.disableOnSuccess){
 									var allFormElements = $("input,textarea,select");
 									$form.find(allFormElements).prop("disabled",true).css("cursor","auto"); // Disable form controls (to prevent duplicate submissions)
+								}
+								if(s.clearInputs){
+									var allFormElements = $("input,textarea,select").not("[type=submit]");
+									$form.find(allFormElements).val('');
 								}
 							} else { // If handler returns an error
 								$status.html(data).show(); // Display error message returned from handler
