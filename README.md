@@ -58,6 +58,12 @@ Success message to be displayed
 ### errorMessage: 'Please complete all required fields.'
 Error message displayed when form fails to validate
 
+### statusHidden: false
+Start with status element hidden
+
+### callback: function(){}
+Function called on successful form submission
+
 [See it in action](http://stephenwidom.com/projects/validatr)
 
 *Developed by Stephen Widom - http://stephenwidom.com*

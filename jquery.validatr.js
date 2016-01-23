@@ -1,9 +1,10 @@
-// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2015-11-18
+// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2016-01-23
 (function($){ // Simple form validation w/ AJAX form submission
 
 	var time = 0; setInterval(setTime,1000); function setTime(){++time;} // Timing how long it takes to complete - for spam prevention purposes
 
 	$.fn.validatr = function(o){
+
 		var s = $.extend({
 			statusElement: 		'.status', 					// Element that will display the status returned
 			requiredClass: 		'req',						// Class of required form elements
@@ -22,8 +23,10 @@
 			submitMessage: 		'Submitting...', 			// Message displayed while form is submitting
 			successMessage: 	'Thanks for contacting us!',// Success message to be displayed
 			errorMessage: 		'Please complete all required fields.', // Default error message
-			statusHidden: 		false 						// Start with status element hidden
+			statusHidden: 		false, 						// Start with status element hidden
+			callback: 			function(){}
 		},o);
+
 
 		var $form = $(this), // Don't want to lose this...
 		 	$status = $form.find(s.statusElement),
@@ -103,6 +106,7 @@
 									var allFormElements = $("input,textarea,select").not("[type=submit]");
 									$form.find(allFormElements).val('');
 								}
+								o.callback.call(this); // Callback function
 							} else { // If handler returns an error
 								$status.html(data).show(); // Display error message returned from handler
 							}
