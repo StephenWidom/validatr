@@ -1,4 +1,4 @@
-// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2016-01-23
+// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2016-02-10
 (function($){ // Simple form validation w/ AJAX form submission
 
 	var time = 0; setInterval(setTime,1000); function setTime(){++time;} // Timing how long it takes to complete - for spam prevention purposes
@@ -24,16 +24,15 @@
 			successMessage: 	'Thanks for contacting us!',// Success message to be displayed
 			errorMessage: 		'Please complete all required fields.', // Default error message
 			statusHidden: 		false, 						// Start with status element hidden
-			callback: 			function(){}
+			callback: 			function(){}				// Function called on success
 		},o);
-
 
 		var $form = $(this), // Don't want to lose this...
 		 	$status = $form.find(s.statusElement),
 		 	$required = $form.find('.' + s.requiredClass),
 			submitMessage = s.submitMessage + ((s.useFontAwesome) ? ' <i class="fa fa-spinner fa-pulse"></i>' : '');
 
-		if(s.statusHidden) $status.hide(); // Don't show anything by default - status element may have a background...
+		if(s.statusHidden) $status.hide(); // Don't show anything - status element may have a background...
 
 		$form.on("submit",function(e){ // Catch form submission
 			e.preventDefault(); // Don't submit the form by default
@@ -120,6 +119,14 @@
 		}
 
 		function isValid($object){ // Check if input's value is valid
+			var type = $object.prop('type');
+			if (type == "checkbox"){
+				return $object.is(":checked");
+			}
+			if (type == "radio"){
+				var name = $object.attr('name');
+				return $('input[name='+name+']').filter(":checked").length > 0;
+			}
 			var value = $object.val().trim(); // Get the value of said input
 			var name = $object.attr("name"); // Get the name of said input (in case it's being used as a placeholder)
 			return (value == "" || value.toLowerCase() == name.toLowerCase()) ? false : true; // Check if input value is blank or equal to its name (placeholder)
