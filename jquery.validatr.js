@@ -1,4 +1,4 @@
-// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2016-02-10
+// validatr by Stephen Widom | http://stephenwidom.com | Latest update: 2016-04-28
 (function($){ // Simple form validation w/ AJAX form submission
 
 	var time = 0; setInterval(setTime,1000); function setTime(){++time;} // Timing how long it takes to complete - for spam prevention purposes
@@ -30,12 +30,14 @@
 		var $form = $(this), // Don't want to lose this...
 		 	$status = $form.find(s.statusElement),
 		 	$required = $form.find('.' + s.requiredClass),
+		 	$submitButton = $form.find('input[type=submit]'),
 			submitMessage = s.submitMessage + ((s.useFontAwesome) ? ' <i class="fa fa-spinner fa-pulse"></i>' : '');
 
 		if(s.statusHidden) $status.hide(); // Don't show anything - status element may have a background...
 
 		$form.on("submit",function(e){ // Catch form submission
 			e.preventDefault(); // Don't submit the form by default
+			$submitButton.attr('disabled', true);
 			$form.find('.' + s.errorClass).removeClass(s.errorClass); // Remove error styling from form elements
 			var error = false; // No errors so far...
 			$required.each(function(){ // Gather each required form input
@@ -62,6 +64,7 @@
 		function validateFields(error){
 			if(error){ // If a required field is invalid
 				$status.html(errorMessage).show(); // Display error message in status element
+				$submitButton.attr('disabled', false);
 			} else { // If we haven't encountered an error yet (we may still have to validate emails & zip codes)
 				var problemFields = [], // Set up an empty array to contain problematic inputs
 					emailInputs = $form.find('.' + s.emailClass); // Grab all email inputs we're going to validate
