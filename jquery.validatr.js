@@ -71,11 +71,13 @@
 				if(emailInputs.length > 0){ // If there are email inputs that need validating...
 					emailInputs.each(function(){ // ...loop through each one
 						var email = $(this).val().trim(); // Get value of email input
-						if(!isEmail(email)){ // If an email provided is invalid
-							error = true;
-							problemFields.push("email address");
-							$(this).addClass(s.errorClass); // Add error class to email input
-						}
+                        if ($(this).hasClass(s.requiredClass) || email != ''){
+						    if(!isEmail(email)){ // If an email provided is invalid
+							    error = true;
+							    problemFields.push("email address");
+							    $(this).addClass(s.errorClass); // Add error class to email input
+						    }
+                        }
 					});
 				}
 				var zipInputs = $form.find('.' + s.zipClass); // Grab all zip code inputs we're going to validate
